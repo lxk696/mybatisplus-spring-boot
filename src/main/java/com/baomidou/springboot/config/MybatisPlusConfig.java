@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.parser.ISqlParserFilter;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.reflection.MetaObject;
+import org.mybatis.spring.annotation.MapperScan;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 
 @Configuration
-//@MapperScan("com.baomidou.springboot.mapper*")//这个注解，作用相当于下面的@Bean MapperScannerConfigurer，2者配置1份即可
+@MapperScan("com.baomidou.springboot.mapper*")//这个注解，作用相当于下面的@Bean MapperScannerConfigurer，2者配置1份即可
 public class MybatisPlusConfig {
 
     /**
@@ -81,12 +82,12 @@ public class MybatisPlusConfig {
      * {@code @MapperScan("com.baomidou.springboot.mapper*")}
      * 这里可以扩展，比如使用配置文件来配置扫描Mapper的路径
      */
-    @Bean
-    public MapperScannerConfigurer mapperScannerConfigurer() {
-        MapperScannerConfigurer scannerConfigurer = new MapperScannerConfigurer();
-        scannerConfigurer.setBasePackage("com.baomidou.springboot.mapper*");
-        return scannerConfigurer;
-    }
+    //@Bean
+    //public MapperScannerConfigurer mapperScannerConfigurer() {
+    //    MapperScannerConfigurer scannerConfigurer = new MapperScannerConfigurer();
+    //    scannerConfigurer.setBasePackage("com.baomidou.springboot.mapper*");
+    //    return scannerConfigurer;
+    //}
 
     @Bean
     public H2KeyGenerator getH2KeyGenerator() {
