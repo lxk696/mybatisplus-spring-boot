@@ -1,16 +1,9 @@
 package com.baomidou.springboot.controller;
 
-import java.util.Date;
-
-import com.baomidou.mybatisplus.core.toolkit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.ApiAssert;
 import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.baomidou.mybatisplus.extension.api.ApiResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,6 +12,14 @@ import com.baomidou.springboot.entity.User;
 import com.baomidou.springboot.entity.enums.AgeEnum;
 import com.baomidou.springboot.entity.enums.PhoneEnum;
 import com.baomidou.springboot.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 代码生成器，参考源码测试用例：
@@ -26,8 +27,8 @@ import com.baomidou.springboot.service.IUserService;
  * /mybatis-plus/src/test/java/com/baomidou/mybatisplus/test/generator/MysqlGenerator.java
  */
 @RestController
-@RequestMapping("/user")
-public class UserController extends ApiController {
+@RequestMapping("/user2")
+public class UserController2 extends ApiController {
 
     @Autowired
     private IUserService userService;
@@ -42,7 +43,7 @@ public class UserController extends ApiController {
      */
     @GetMapping("/api")
     public ApiResult<String> testError(String test) {
-        Assert.notNull(ErrorCode.TEST, test);
+        ApiAssert.notNull(ErrorCode.TEST, test);
         return success(test);
     }
 
@@ -51,6 +52,8 @@ public class UserController extends ApiController {
      */
     @GetMapping("/test")
     public IPage<User> test() {
+        List<User> users = userService.selectListBySQL();
+        List<User> list = userService.list(null);
         return userService.page(new Page<User>(0, 12), null);
     }
 
@@ -65,6 +68,8 @@ public class UserController extends ApiController {
         user.setRole(111L);
         user.setTestDate(new Date());
         user.setPhone(PhoneEnum.CMCC);
+        user.setTenantId(1L);
+        user.setTestDate(DateUtil.parseDate("1999-01-01 01:01:01"));
         user.insert();
         System.err.println("查询插入结果：" + user.selectById().toString());
         user.setName("mybatis-plus-ar");
@@ -134,9 +139,7 @@ public class UserController extends ApiController {
      */
     @GetMapping("/select_wrapper")
     public Object getUserByWrapper() {
-        return userService.selectListByWrapper(new QueryWrapper<User>()
-                .lambda().like(User::getName, "毛")
-                .or(e -> e.like(User::getName, "张")));
+        return userService.selectListByWrapper(new QueryWrapper<User>().lambda().like(User::getName, "毛").or(e -> e.like(User::getName, "张")));
     }
 
     /**
@@ -157,7 +160,11 @@ public class UserController extends ApiController {
             // 注意！！这个地方自己控制好！！
             page.setSize(-1);
         }
-        return userService.page(page, null);
+        //return userService.page(page, null);
+        //QueryWrapper<User> queryWrapper = new QueryWrapper<User>().setEntity(new User("东狗", null, 2));
+        //QueryWrapper<User> queryWrapper = new QueryWrapper<User>().apply("1=1").and(true, i -> i.eq("tenant_Id", "2").le("test_id", "6")).or(true, i -> i.eq("tenant_Id", "1").ge("test_id", "22"));
+        QueryWrapper<User> queryWrapper = new QueryWrapper<User>().and(true, i -> i.eq("tenant_Id", "2").le("test_id", "6")).or(true, i -> i.eq("tenant_Id", "1").ge("test_id", "22"));
+        return userService.page(page, queryWrapper);
     }
 
     /**

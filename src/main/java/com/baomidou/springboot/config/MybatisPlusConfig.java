@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.parser.ISqlParserFilter;
+import com.baomidou.mybatisplus.core.parser.SqlParserHelper;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.reflection.MetaObject;
@@ -65,13 +66,13 @@ public class MybatisPlusConfig {
         paginationInterceptor.setSqlParserFilter(new ISqlParserFilter() {
             @Override
             public boolean doFilter(MetaObject metaObject) {
-                //MappedStatement ms = PluginUtils.getMappedStatement(metaObject);
+                MappedStatement ms = SqlParserHelper.getMappedStatement(metaObject);
                 // 过滤自定义查询, 此时无租户信息约束【 麻花藤 】出现
-                //if ("com.baomidou.springboot.mapper.UserMapper.selectListBySQL".equals(ms.getId())) {
-                //    return true;
-                //}
-                //return false;
-                return true;
+                String id = ms.getId();
+                if ("com.baomidou.springboot.mapper.UserMapper.selectListBySQL".equals(id)) {
+                    return true;
+                }
+                return false;
             }
         });
         return paginationInterceptor;
